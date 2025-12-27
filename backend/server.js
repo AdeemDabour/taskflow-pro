@@ -1,8 +1,8 @@
 // server.js
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,39 +22,43 @@ app.use((req, res, next) => {
 });
 
 // Basic route
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: 'TaskFlow Pro API',
-    version: '1.0.0',
-    timestamp: new Date().toISOString()
+    message: "TaskFlow Pro API",
+    version: "1.0.0",
+    timestamp: new Date().toISOString(),
   });
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.json({
     success: true,
-    status: 'Server is running',
+    status: "Server is running",
     uptime: process.uptime(),
-    mongodb: 'Connected'
+    mongodb: "Connected",
   });
 });
+
+// ===== ROUTES =====
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: "Route not found",
   });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
+  console.error("Error:", err.message);
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || 'Internal server error'
+    message: err.message || "Internal server error",
   });
 });
 

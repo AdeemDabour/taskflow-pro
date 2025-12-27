@@ -11,10 +11,10 @@ const workspaceSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    required: true,
     unique: true,
     lowercase: true,
     trim: true
+    // ✅ Removed 'required' - will be auto-generated
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -37,7 +37,7 @@ const workspaceSchema = new mongoose.Schema({
     },
     maxMembers: {
       type: Number,
-      default: 10  // Free plan limit
+      default: 10
     }
   },
   isActive: {
@@ -48,9 +48,9 @@ const workspaceSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Generate slug from name before saving
-workspaceSchema.pre('save', function(next) {
-  if (this.isModified('name')) {
+// Generate slug from name before validation
+workspaceSchema.pre('validate', function(next) {
+  if (this.name && !this.slug) {
     // Convert "Tesla Israel" → "tesla-israel"
     this.slug = this.name
       .toLowerCase()
@@ -62,7 +62,7 @@ workspaceSchema.pre('save', function(next) {
 
 // Ensure slug is unique by adding random suffix if needed
 workspaceSchema.pre('save', async function(next) {
-  if (this.isNew) {
+  if (this.isNew && this.slug) {
     let slugExists = await mongoose.model('Workspace').findOne({ slug: this.slug });
     
     if (slugExists) {

@@ -1,22 +1,20 @@
 // routes/auth.js
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Workspace = require('../models/Workspace');
-
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const Workspace = require("../models/Workspace");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 // Helper function to generate JWT
 const generateToken = (userId, workspaceId) => {
-  return jwt.sign(
-    { userId, workspaceId },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE || '7d' }
-  );
+  return jwt.sign({ userId, workspaceId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || "7d",
+  });
 };
 
 // ===== REGISTER (Creates User + Workspace) =====
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { name, email, password, workspaceName } = req.body;
 
@@ -24,7 +22,7 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !password || !workspaceName) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields'
+        message: "Please provide all required fields",
       });
     }
 
@@ -33,14 +31,14 @@ router.post('/register', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'Email already registered'
+        message: "Email already registered",
       });
     }
 
     // Step 1: Create workspace first (without owner)
     const workspace = new Workspace({
       name: workspaceName,
-      owner: new mongoose.Types.ObjectId() // Temporary, will update
+      owner: new mongoose.Types.ObjectId(), // Temporary, will update
     });
 
     await workspace.save();
@@ -51,7 +49,7 @@ router.post('/register', async (req, res) => {
       email,
       password,
       workspace: workspace._id,
-      role: 'owner'  // First user is owner
+      role: "owner", // First user is owner
     });
 
     await user.save();
@@ -66,39 +64,38 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful',
+      message: "Registration successful",
       data: {
         user: {
           id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role
+          role: user.role,
         },
         workspace: {
           id: workspace._id,
           name: workspace.name,
-          slug: workspace.slug
+          slug: workspace.slug,
         },
-        token
-      }
+        token,
+      },
     });
-
   } catch (error) {
-    console.error('Registration error:', error);
-    
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(err => err.message);
+    console.error("Registration error:", error);
+
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
-        message: 'Validation error',
-        errors: messages
+        message: "Validation error",
+        errors: messages,
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Server error during registration',
-      error: error.message
+      message: "Server error during registration",
+      error: error.message,
     });
   }
 });
@@ -119,7 +116,7 @@ router.post('/login', async (req, res) => {
     // Find user with password field
     const user = await User.findOne({ email })
       .select('+password')
-      .populate('workspace', 'name slug');
+      .populate('workspace', 'name slug isActive');  // ✅ Added isActive
 
     if (!user) {
       return res.status(401).json({
@@ -147,7 +144,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Check if workspace is active
-    if (!user.workspace.isActive) {
+    if (!user.workspace || !user.workspace.isActive) {  // ✅ Added null check
       return res.status(401).json({
         success: false,
         message: 'Workspace is deactivated. Contact support.'
@@ -186,4 +183,25 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Test protected route (add this at the end of auth.js, before module.exports)
+const auth = require('../middleware/auth');
+
+router.get('/me', auth, async (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      user: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role
+      },
+      workspace: {
+        id: req.user.workspace._id,
+        name: req.user.workspace.name,
+        slug: req.user.workspace.slug
+      }
+    }
+  });
+});
 module.exports = router;
