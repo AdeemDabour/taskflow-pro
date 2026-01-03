@@ -3,26 +3,24 @@ const express = require('express');
 const Task = require('../models/Task');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { isOwnerOrAdmin, canModifyTask } = require('../middleware/permissions');
 
 const router = express.Router();
 
 // ✅ All routes require authentication
 router.use(auth);
 
-// ===== GET ALL TASKS (with automatic workspace filtering!) =====
+// ===== GET ALL TASKS (Everyone can view) =====
 router.get('/', async (req, res) => {
   try {
     const { status, priority, assignedTo, search } = req.query;
     
-    // ✅ CRITICAL: Always filter by workspace!
     const filter = { workspace: req.workspaceId };
     
-    // Optional filters
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
     if (assignedTo) filter.assignedTo = assignedTo;
     
-    // Search in title and description
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -31,9 +29,9 @@ router.get('/', async (req, res) => {
     }
     
     const tasks = await Task.find(filter)
-      .populate('createdBy', 'name email')
-      .populate('assignedTo', 'name email')
-      .sort({ createdAt: -1 });  // Newest first
+      .populate('createdBy', 'name email role')
+      .populate('assignedTo', 'name email role')
+      .sort({ createdAt: -1 });
     
     res.json({
       success: true,
@@ -51,16 +49,15 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ===== GET SINGLE TASK =====
+// ===== GET SINGLE TASK (Everyone can view) =====
 router.get('/:id', async (req, res) => {
   try {
-    // ✅ CRITICAL: Filter by workspace to prevent cross-tenant access!
     const task = await Task.findOne({
       _id: req.params.id,
-      workspace: req.workspaceId  // ← Security!
+      workspace: req.workspaceId
     })
-      .populate('createdBy', 'name email')
-      .populate('assignedTo', 'name email');
+      .populate('createdBy', 'name email role')
+      .populate('assignedTo', 'name email role');
     
     if (!task) {
       return res.status(404).json({
@@ -84,12 +81,11 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// ===== CREATE TASK =====
+// ===== CREATE TASK (Everyone can create) =====
 router.post('/', async (req, res) => {
   try {
     const { title, description, priority, dueDate, assignedTo, tags } = req.body;
     
-    // Validate assigned user belongs to same workspace
     if (assignedTo) {
       const assignedUser = await User.findOne({
         _id: assignedTo,
@@ -104,7 +100,6 @@ router.post('/', async (req, res) => {
       }
     }
     
-    // ✅ Create task with workspace automatically set!
     const task = new Task({
       title,
       description,
@@ -112,15 +107,14 @@ router.post('/', async (req, res) => {
       dueDate,
       assignedTo,
       tags,
-      workspace: req.workspaceId,  // ← Auto from middleware!
+      workspace: req.workspaceId,
       createdBy: req.user._id
     });
     
     await task.save();
     
-    // Populate for response
-    await task.populate('createdBy', 'name email');
-    await task.populate('assignedTo', 'name email');
+    await task.populate('createdBy', 'name email role');
+    await task.populate('assignedTo', 'name email role');
     
     res.status(201).json({
       success: true,
@@ -148,25 +142,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ===== UPDATE TASK =====
-router.put('/:id', async (req, res) => {
+// ===== UPDATE TASK (With permission check!) =====
+router.put('/:id', canModifyTask, async (req, res) => {
   try {
     const { title, description, status, priority, dueDate, assignedTo, tags } = req.body;
     
-    // Find task (with workspace filter!)
-    const task = await Task.findOne({
-      _id: req.params.id,
-      workspace: req.workspaceId
-    });
+    const task = req.task;  // Already loaded by middleware!
     
-    if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: 'Task not found'
-      });
-    }
-    
-    // Validate assigned user if changing
     if (assignedTo && assignedTo !== task.assignedTo?.toString()) {
       const assignedUser = await User.findOne({
         _id: assignedTo,
@@ -181,7 +163,6 @@ router.put('/:id', async (req, res) => {
       }
     }
     
-    // Update fields
     if (title) task.title = title;
     if (description !== undefined) task.description = description;
     if (status) task.status = status;
@@ -192,9 +173,8 @@ router.put('/:id', async (req, res) => {
     
     await task.save();
     
-    // Populate for response
-    await task.populate('createdBy', 'name email');
-    await task.populate('assignedTo', 'name email');
+    await task.populate('createdBy', 'name email role');
+    await task.populate('assignedTo', 'name email role');
     
     res.json({
       success: true,
@@ -222,26 +202,15 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// ===== DELETE TASK =====
-router.delete('/:id', async (req, res) => {
+// ===== DELETE TASK (Only owner/admin OR task creator) =====
+router.delete('/:id', canModifyTask, async (req, res) => {
   try {
-    // ✅ CRITICAL: Workspace filter prevents deleting other company's tasks!
-    const task = await Task.findOneAndDelete({
-      _id: req.params.id,
-      workspace: req.workspaceId
-    });
-    
-    if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: 'Task not found'
-      });
-    }
+    await req.task.deleteOne();
     
     res.json({
       success: true,
       message: 'Task deleted successfully',
-      data: task
+      data: req.task
     });
     
   } catch (error) {
@@ -254,10 +223,9 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// ===== GET TASK STATISTICS =====
+// ===== GET TASK STATISTICS (Everyone can view) =====
 router.get('/stats/overview', async (req, res) => {
   try {
-    // All stats filtered by workspace!
     const stats = await Task.aggregate([
       { $match: { workspace: req.workspaceId } },
       {
@@ -296,7 +264,6 @@ router.get('/stats/overview', async (req, res) => {
       urgent: 0
     };
     
-    // Calculate completion rate
     const completionRate = result.total > 0
       ? ((result.done / result.total) * 100).toFixed(1)
       : 0;

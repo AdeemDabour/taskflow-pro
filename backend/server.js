@@ -42,10 +42,12 @@ app.get('/health', (req, res) => {
 
 // ===== API ROUTES =====
 const authRoutes = require('./routes/auth');
-const taskRoutes = require('./routes/tasks');  // ✅ NEW!
+const taskRoutes = require('./routes/tasks'); 
+const workspaceRoutes = require('./routes/workspaces');  // ✅ NEW!
 
 app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);  // ✅ NEW!
+app.use('/api/tasks', taskRoutes);
+app.use('/api/workspaces', workspaceRoutes);  // ✅ NEW!
 
 // 404 handler
 app.use((req, res) => {

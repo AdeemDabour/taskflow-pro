@@ -101,7 +101,7 @@ router.post("/register", async (req, res) => {
 });
 
 // ===== LOGIN =====
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -109,19 +109,19 @@ router.post('/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: "Please provide email and password",
       });
     }
 
     // Find user with password field
     const user = await User.findOne({ email })
-      .select('+password')
-      .populate('workspace', 'name slug isActive');  // ✅ Added isActive
+      .select("+password")
+      .populate("workspace", "name slug isActive"); // ✅ Added isActive
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: "Invalid email or password",
       });
     }
 
@@ -129,25 +129,26 @@ router.post('/login', async (req, res) => {
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
-        message: 'Account is deactivated. Contact your administrator.'
+        message: "Account is deactivated. Contact your administrator.",
       });
     }
 
     // Check password
     const isMatch = await user.comparePassword(password);
-    
+
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: "Invalid email or password",
       });
     }
 
     // Check if workspace is active
-    if (!user.workspace || !user.workspace.isActive) {  // ✅ Added null check
+    if (!user.workspace || !user.workspace.isActive) {
+      // ✅ Added null check
       return res.status(401).json({
         success: false,
-        message: 'Workspace is deactivated. Contact support.'
+        message: "Workspace is deactivated. Contact support.",
       });
     }
 
@@ -156,37 +157,36 @@ router.post('/login', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Login successful',
+      message: "Login successful",
       data: {
         user: {
           id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role
+          role: user.role,
         },
         workspace: {
           id: user.workspace._id,
           name: user.workspace.name,
-          slug: user.workspace.slug
+          slug: user.workspace.slug,
         },
-        token
-      }
+        token,
+      },
     });
-
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error during login',
-      error: error.message
+      message: "Server error during login",
+      error: error.message,
     });
   }
 });
 
 // Test protected route (add this at the end of auth.js, before module.exports)
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
 
-router.get('/me', auth, async (req, res) => {
+router.get("/me", auth, async (req, res) => {
   res.json({
     success: true,
     data: {
@@ -194,14 +194,14 @@ router.get('/me', auth, async (req, res) => {
         id: req.user._id,
         name: req.user.name,
         email: req.user.email,
-        role: req.user.role
+        role: req.user.role,
       },
       workspace: {
         id: req.user.workspace._id,
         name: req.user.workspace.name,
-        slug: req.user.workspace.slug
-      }
-    }
+        slug: req.user.workspace.slug,
+      },
+    },
   });
 });
 module.exports = router;
