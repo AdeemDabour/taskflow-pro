@@ -2,26 +2,47 @@
 
 > Multi-tenant team collaboration platform built with Node.js, Express, and MongoDB
 
+## 🌐 Live Demo
+
+**🚀 API:** https://taskflow-pro-production-f430.up.railway.app/
+
+**Test the API:**
+- Health Check: `GET /health`
+- Register: `POST /api/auth/register`
+- Login: `POST /api/auth/login`
+- Tasks: `POST /api/tasks` (requires auth)
+- View API Documentation: [API.md](./API.md)
+
 [![Node.js](https://img.shields.io/badge/Node.js-v16+-green.svg)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen.svg)](https://www.mongodb.com/cloud/atlas)
+[![Deployed](https://img.shields.io/badge/Deployed-Railway-blueviolet.svg)](https://railway.app)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## 🚀 Features
 
-### ✅ Implemented
+### ✅ Implemented (Production Ready!)
 - [x] **Multi-tenant architecture** - Complete workspace isolation
-- [x] **User authentication** - JWT-based secure auth
+- [x] **User authentication** - JWT-based secure auth  
 - [x] **Workspace management** - Auto-created on registration
+- [x] **Task management system** - Full CRUD operations
+- [x] **Role-based permissions** - Owner/Admin/Member roles
+- [x] **Team collaboration** - Multi-user workspaces
+- [x] **Task assignment** - Assign to team members
+- [x] **Status tracking** - Todo, In-Progress, Review, Done
+- [x] **Priority management** - Low, Medium, High, Urgent
+- [x] **Task statistics** - Dashboard analytics
 - [x] **Password hashing** - bcrypt security
 - [x] **Protected routes** - Middleware-based authorization
+- [x] **Cross-tenant security** - Complete data isolation
+- [x] **Production deployment** - Live on Railway
 
-### 🚧 In Progress
-- [ ] Task management with real-time updates
-- [ ] Team collaboration features
-- [ ] Role-based permissions
+### 🚧 Future Enhancements
+- [ ] Real-time updates (Socket.io)
 - [ ] File attachments
-- [ ] Activity tracking
+- [ ] Comments system
+- [ ] Activity logging
 - [ ] Email notifications
+- [ ] Advanced analytics dashboard
 
 ## 🛠️ Tech Stack
 
@@ -31,32 +52,38 @@
 - JWT Authentication
 - bcryptjs for password hashing
 - CORS enabled
-- Socket.io (planned for real-time)
+- Deployed on Railway
 
 **Security:**
 - JWT token-based authentication
-- Password hashing with bcrypt
+- Password hashing with bcrypt (10 rounds)
 - Protected API routes
 - Workspace data isolation
+- Role-based access control (RBAC)
+- MongoDB injection prevention
+- Environment variable protection
 
 ## 📦 Project Structure
 ```
 taskflow-pro/
-├── backend/
-│   ├── config/
-│   │   └── db.js              # MongoDB connection
-│   ├── models/
-│   │   ├── User.js            # User model with workspace link
-│   │   └── Workspace.js       # Multi-tenant workspace model
-│   ├── routes/
-│   │   └── auth.js            # Authentication routes
-│   ├── middleware/
-│   │   └── auth.js            # JWT verification middleware
-│   ├── utils/                 # Utility functions (planned)
-│   ├── .env                   # Environment variables
-│   ├── .gitignore
-│   ├── package.json
-│   └── server.js              # Entry point
+├── config/
+│   └── db.js                  # MongoDB connection
+├── models/
+│   ├── User.js                # User model with workspace link
+│   ├── Workspace.js           # Multi-tenant workspace model
+│   └── Task.js                # Task model with permissions
+├── routes/
+│   ├── auth.js                # Authentication routes
+│   ├── tasks.js               # Task management routes
+│   └── workspaces.js          # Workspace management routes
+├── middleware/
+│   ├── auth.js                # JWT verification
+│   └── permissions.js         # Role-based access control
+├── .env                       # Environment variables
+├── .gitignore
+├── package.json
+├── server.js                  # Entry point
+├── API.md                     # API Documentation
 └── README.md
 ```
 
@@ -72,7 +99,7 @@ taskflow-pro/
 1. **Clone the repository**
 ```bash
 git clone https://github.com/YOUR_USERNAME/taskflow-pro.git
-cd taskflow-pro/backend
+cd taskflow-pro
 ```
 
 2. **Install dependencies**
@@ -107,54 +134,40 @@ Server will start at `http://localhost:5000`
 ## 🧪 API Endpoints
 
 ### Authentication
-
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | POST | `/api/auth/register` | Register user + create workspace | No |
 | POST | `/api/auth/login` | Login user | No |
 | GET | `/api/auth/me` | Get current user info | Yes |
 
-### Example Requests
+### Tasks
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/tasks` | Get all tasks (workspace filtered) | Yes |
+| GET | `/api/tasks/:id` | Get single task | Yes |
+| POST | `/api/tasks` | Create new task | Yes |
+| PUT | `/api/tasks/:id` | Update task | Yes (with permissions) |
+| DELETE | `/api/tasks/:id` | Delete task | Yes (with permissions) |
+| GET | `/api/tasks/stats/overview` | Get task statistics | Yes |
 
-**Register:**
-```bash
-POST http://localhost:5000/api/auth/register
-Content-Type: application/json
+### Workspaces
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/workspaces/current` | Get current workspace | Yes |
+| GET | `/api/workspaces/members` | Get workspace members | Yes |
+| POST | `/api/workspaces/create-member` | Add team member | Yes (Owner only) |
+| PUT | `/api/workspaces/settings` | Update workspace | Yes (Owner only) |
+| PATCH | `/api/workspaces/members/:id/role` | Update member role | Yes (Owner/Admin) |
 
-{
-  "name": "John Doe",
-  "email": "john@company.com",
-  "password": "secure123",
-  "workspaceName": "My Company"
-}
-```
+**Full API documentation:** [API.md](./API.md)
 
-**Login:**
-```bash
-POST http://localhost:5000/api/auth/login
-Content-Type: application/json
+## 🎯 Development Journey
 
-{
-  "email": "john@company.com",
-  "password": "secure123"
-}
-```
-
-**Get Current User (Protected):**
-```bash
-GET http://localhost:5000/api/auth/me
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-## 🎯 Development Status
-
-### ✅ Phase 1: Foundation (Week 1) - **COMPLETE**
+### ✅ Week 1: Foundation & Multi-Tenant Auth - **COMPLETE**
 - [x] Project structure & setup
 - [x] MongoDB Atlas connection
 - [x] Environment configuration
 - [x] Basic Express server
-
-### ✅ Phase 2: Multi-Tenant Auth (Week 1) - **COMPLETE**
 - [x] Workspace model (tenant isolation)
 - [x] User model with workspace link
 - [x] Registration (creates user + workspace)
@@ -163,86 +176,106 @@ Authorization: Bearer YOUR_JWT_TOKEN
 - [x] Auth middleware
 - [x] Protected routes
 
-### 🚧 Phase 3: Task System (Week 2) - **IN PROGRESS**
-- [ ] Task model with workspace filtering
-- [ ] Task CRUD operations
-- [ ] Assign tasks to team members
-- [ ] Task status & priority
-- [ ] Automatic tenant isolation
+### ✅ Week 2: Task System & Permissions - **COMPLETE**
+- [x] Task model with workspace filtering
+- [x] Task CRUD operations
+- [x] Assign tasks to team members
+- [x] Task status & priority
+- [x] Automatic tenant isolation
+- [x] Role-based permissions (Owner/Admin/Member)
+- [x] Permission middleware
+- [x] Workspace management routes
+- [x] Task statistics endpoint
+- [x] Production deployment to Railway
 
-### 📅 Phase 4: Advanced Features (Week 3-4) - **PLANNED**
+### 📅 Future Phases - **PLANNED**
 - [ ] Real-time updates (Socket.io)
 - [ ] File attachments
 - [ ] Comments system
 - [ ] Activity logging
 - [ ] Email notifications
-
-### 📅 Phase 5: Polish & Deploy (Week 5-6) - **PLANNED**
-- [ ] Comprehensive testing
-- [ ] API documentation
-- [ ] Performance optimization
-- [ ] Security hardening
-- [ ] Production deployment
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app integration
 
 ## 🏗️ Architecture Highlights
 
 ### Multi-Tenancy Pattern
 ```javascript
-// Every user belongs to a workspace
-User → Workspace (tenant)
+// Every user belongs to a workspace (tenant)
+User → Workspace
 
 // JWT token contains workspace context
 {
-  userId: "...",
-  workspaceId: "..."  // ← Automatic tenant isolation
+  userId: "user_123",
+  workspaceId: "workspace_456"  // ← Automatic tenant isolation
 }
 
 // All queries automatically filtered by workspace
-Task.find({ workspaceId: req.user.workspaceId })
+Task.find({ workspace: req.workspaceId })
 ```
 
 ### Data Isolation
 - Single database, multiple tenants
 - Workspace-based data separation
 - Automatic filtering via middleware
-- Secure by design
+- Secure by design - no cross-tenant access possible
 
-## 📚 Documentation
-
-- [API Documentation](./docs/API.md) (Coming soon)
-- [Architecture Guide](./docs/ARCHITECTURE.md) (Coming soon)
-- [Deployment Guide](./docs/DEPLOYMENT.md) (Coming soon)
+### Role-Based Permissions
+```javascript
+Owner   → Full control (workspace settings, promote admins)
+Admin   → Manage tasks, manage members
+Member  → Create tasks, edit own tasks only
+```
 
 ## 🔐 Security Features
 
 - ✅ Password hashing with bcrypt (10 rounds)
 - ✅ JWT token expiration (7 days default)
 - ✅ Protected API routes
-- ✅ Workspace data isolation
-- ✅ Input validation
+- ✅ Workspace data isolation (multi-tenancy)
+- ✅ Role-based access control
+- ✅ Input validation on all routes
 - ✅ CORS configuration
-- 🚧 Rate limiting (planned)
-- 🚧 Request sanitization (planned)
+- ✅ MongoDB injection prevention
+- ✅ Secure environment variables
+- ✅ Production-grade error handling
 
 ## 🚀 Deployment
 
-*Deployment guide coming in Week 3-4*
+**Live on Railway:** https://taskflow-pro-production-f430.up.railway.app/
 
-Planned platforms:
-- Railway (primary)
-- Render (alternative)
-- AWS/DigitalOcean (production)
+**Deployment Features:**
+- ✅ Automatic deployments from GitHub
+- ✅ Environment variables configured
+- ✅ MongoDB Atlas integration
+- ✅ Health check endpoint
+- ✅ Production-optimized build
+- ✅ CORS configured for frontend integration
+
+**Deploy your own:**
+1. Fork this repository
+2. Create Railway account
+3. Connect GitHub repository
+4. Add environment variables
+5. Deploy!
+
+## 📚 Documentation
+
+- ✅ [API Documentation](./API.md)
+- 🚧 Architecture Guide (Coming soon)
+- 🚧 Deployment Guide (Coming soon)
 
 ## 👨‍💻 Author
 
 **Adeem**
-- 🎯 Building production-ready SaaS platform
+- 🎯 Building production-ready SaaS platforms
 - 🇮🇱 Targeting Israeli tech market
 - 💼 Showcasing enterprise Node.js skills
+- 🚀 Available for backend developer positions
 
 ## 🤝 Contributing
 
-This is a portfolio project, but feedback is welcome!
+This is a portfolio project, but feedback and suggestions are welcome!
 
 ## 📄 License
 
@@ -250,24 +283,46 @@ MIT License - feel free to use this for learning!
 
 ## 🎯 Project Goals
 
-Built to demonstrate:
+This project demonstrates:
 - ✅ Multi-tenant SaaS architecture
 - ✅ Secure authentication systems
+- ✅ Role-based access control
 - ✅ Scalable backend design
 - ✅ Production-ready code quality
 - ✅ MongoDB best practices
 - ✅ RESTful API design
+- ✅ Professional deployment practices
 
-**Perfect for Israeli tech companies seeking skilled Node.js developers!** 🇮🇱
+**Perfect portfolio project for Israeli tech companies seeking skilled Node.js developers!** 🇮🇱
 
-## 📊 Progress
+## 📊 Project Status
 ```
-Week 1: ████████████████████ 100% (Auth & Multi-tenancy)
-Week 2: ██░░░░░░░░░░░░░░░░░░  10% (Task System)
-Week 3: ░░░░░░░░░░░░░░░░░░░░   0% (Advanced Features)
-Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Polish & Deploy)
+Foundation:        ████████████████████ 100% ✅
+Authentication:    ████████████████████ 100% ✅
+Multi-Tenancy:     ████████████████████ 100% ✅
+Task Management:   ████████████████████ 100% ✅
+Permissions:       ████████████████████ 100% ✅
+Deployment:        ████████████████████ 100% ✅
+Real-time:         ░░░░░░░░░░░░░░░░░░░░   0%
+Advanced Features: ░░░░░░░░░░░░░░░░░░░░   0%
+
+Overall Progress:  ████████████░░░░░░░░ 60%
 ```
+
+## 🎉 Key Achievements
+
+- 🏆 Built complete multi-tenant SaaS backend
+- 🔐 Implemented enterprise-level security
+- 🚀 Successfully deployed to production
+- 📊 Full CRUD operations with permissions
+- 👥 Team collaboration features
+- ⚡ Production-grade error handling
+- 📝 Comprehensive API documentation
 
 ---
 
-**Star ⭐ this repo if you find it helpful!**
+**⭐ Star this repo if you find it helpful!**
+
+**🔗 Live Demo:** https://taskflow-pro-production-f430.up.railway.app/
+
+**📧 Contact:** [www.linkedin.com/in/adeem-dabour]
