@@ -35,11 +35,13 @@
 - [x] **Protected routes** - Middleware-based authorization
 - [x] **Cross-tenant security** - Complete data isolation
 - [x] **Production deployment** - Live on Railway
+- [x] **Comments system** - Team discussions on tasks
+- [x] **Comment permissions** - Edit own, owners delete any
+- [x] **Comment editing** - Edit comments with timestamp tracking
 
 ### 🚧 Future Enhancements
 - [ ] Real-time updates (Socket.io)
 - [ ] File attachments
-- [ ] Comments system
 - [ ] Activity logging
 - [ ] Email notifications
 - [ ] Advanced analytics dashboard
@@ -72,10 +74,12 @@ taskflow-pro/
 │   ├── User.js                # User model with workspace link
 │   ├── Workspace.js           # Multi-tenant workspace model
 │   └── Task.js                # Task model with permissions
+│   └── Comment.js             # Comment model for discussions
 ├── routes/
 │   ├── auth.js                # Authentication routes
 │   ├── tasks.js               # Task management routes
 │   └── workspaces.js          # Workspace management routes
+│   └── comments.js            # Comment management routes
 ├── middleware/
 │   ├── auth.js                # JWT verification
 │   └── permissions.js         # Role-based access control
@@ -159,6 +163,15 @@ Server will start at `http://localhost:5000`
 | PUT | `/api/workspaces/settings` | Update workspace | Yes (Owner only) |
 | PATCH | `/api/workspaces/members/:id/role` | Update member role | Yes (Owner/Admin) |
 
+### Comments
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/comments/task/:taskId` | Get all comments on task | Yes |
+| POST | `/api/comments/task/:taskId` | Add comment to task | Yes |
+| PUT | `/api/comments/:id` | Edit own comment | Yes (Author only) |
+| DELETE | `/api/comments/:id` | Delete comment | Yes (Author/Owner/Admin) |
+| GET | `/api/comments/task/:taskId/count` | Get comment count | Yes |
+
 **Full API documentation:** [API.md](./API.md)
 
 ## 🎯 Development Journey
@@ -187,11 +200,12 @@ Server will start at `http://localhost:5000`
 - [x] Workspace management routes
 - [x] Task statistics endpoint
 - [x] Production deployment to Railway
+- [x] Comments system with full CRUD
+- [x] Comment permissions (author edit, owner/admin delete)
 
 ### 📅 Future Phases - **PLANNED**
 - [ ] Real-time updates (Socket.io)
 - [ ] File attachments
-- [ ] Comments system
 - [ ] Activity logging
 - [ ] Email notifications
 - [ ] Advanced analytics dashboard
@@ -306,7 +320,7 @@ Deployment:        ████████████████████ 
 Real-time:         ░░░░░░░░░░░░░░░░░░░░   0%
 Advanced Features: ░░░░░░░░░░░░░░░░░░░░   0%
 
-Overall Progress:  ████████████░░░░░░░░ 60%
+Overall Progress:  █████████████░░░░░░░ 65%
 ```
 
 ## 🎉 Key Achievements
@@ -318,6 +332,7 @@ Overall Progress:  ████████████░░░░░░░░ 
 - 👥 Team collaboration features
 - ⚡ Production-grade error handling
 - 📝 Comprehensive API documentation
+- 💬 Team discussion features via comments
 
 ---
 

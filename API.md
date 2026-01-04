@@ -155,7 +155,84 @@ Content-Type: application/json
   "role": "admin"
 }
 ```
+---
 
+### Comments
+
+#### Get All Comments for Task
+```http
+GET /api/comments/task/:taskId
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "count": 2,
+  "data": [
+    {
+      "_id": "...",
+      "content": "Comment text here",
+      "author": {
+        "name": "John Doe",
+        "email": "john@company.com",
+        "role": "member"
+      },
+      "isEdited": false,
+      "createdAt": "2025-01-04T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+#### Add Comment to Task
+```http
+POST /api/comments/task/:taskId
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "content": "This is my comment"
+}
+```
+
+#### Edit Comment (Author only)
+```http
+PUT /api/comments/:id
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "content": "Updated comment text"
+}
+```
+
+**Permissions:** Only the comment author can edit their own comments
+
+#### Delete Comment
+```http
+DELETE /api/comments/:id
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Permissions:** 
+- Author: Can delete their own comments
+- Admins/Owners: Can delete any comment
+
+#### Get Comment Count
+```http
+GET /api/comments/task/:taskId/count
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": { "count": 5 }
+}
+```
 ---
 
 ## Role Permissions
@@ -170,7 +247,12 @@ Content-Type: application/json
 | Delete any task | ✅ | ✅ | ❌ |
 | Manage workspace | ✅ | ❌ | ❌ |
 | Promote to admin | ✅ | ❌ | ❌ |
-
+| View comments | ✅ | ✅ | ✅ |
+| Add comment | ✅ | ✅ | ✅ |
+| Edit own comment | ✅ | ✅ | ✅ |
+| Edit any comment | ❌ | ❌ | ❌ |
+| Delete own comment | ✅ | ✅ | ✅ |
+| Delete any comment | ✅ | ✅ | ❌ |
 ---
 
 ## Error Responses

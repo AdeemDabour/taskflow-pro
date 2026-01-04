@@ -52,11 +52,12 @@ app.get('/health', (req, res) => {
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
 const workspaceRoutes = require('./routes/workspaces');
+const commentRoutes = require('./routes/comments');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/workspaces', workspaceRoutes);
-
+app.use('/api/comments', commentRoutes);
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
