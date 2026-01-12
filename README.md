@@ -48,6 +48,15 @@
 
 ## 🛠️ Tech Stack
 
+**Frontend:**
+- React 18 with Vite
+- Tailwind CSS for styling
+- React Router v6 for navigation
+- Axios for API requests
+- Context API for state management
+- Lucide React for icons
+- React Hot Toast for notifications
+
 **Backend:**
 - Node.js & Express.js
 - MongoDB & Mongoose
@@ -59,36 +68,55 @@
 **Security:**
 - JWT token-based authentication
 - Password hashing with bcrypt (10 rounds)
-- Protected API routes
+- Protected API routes (frontend & backend)
 - Workspace data isolation
 - Role-based access control (RBAC)
 - MongoDB injection prevention
 - Environment variable protection
+- Axios request/response interceptors
 
 ## 📦 Project Structure
 ```
 taskflow-pro/
-├── config/
-│   └── db.js                  # MongoDB connection
-├── models/
-│   ├── User.js                # User model with workspace link
-│   ├── Workspace.js           # Multi-tenant workspace model
-│   └── Task.js                # Task model with permissions
-│   └── Comment.js             # Comment model for discussions
-├── routes/
-│   ├── auth.js                # Authentication routes
-│   ├── tasks.js               # Task management routes
-│   └── workspaces.js          # Workspace management routes
-│   └── comments.js            # Comment management routes
-├── middleware/
-│   ├── auth.js                # JWT verification
-│   └── permissions.js         # Role-based access control
-├── .env                       # Environment variables
-├── .gitignore
-├── package.json
-├── server.js                  # Entry point
-├── API.md                     # API Documentation
-└── README.md
+├── backend/                    # Node.js Backend API
+│   ├── config/
+│   │   └── db.js              # MongoDB connection
+│   ├── models/
+│   │   ├── User.js            # User model with workspace link
+│   │   ├── Workspace.js       # Multi-tenant workspace model
+│   │   ├── Task.js            # Task model with permissions
+│   │   └── Comment.js         # Comment model for discussions
+│   ├── routes/
+│   │   ├── auth.js            # Authentication routes
+│   │   ├── tasks.js           # Task management routes
+│   │   ├── workspaces.js      # Workspace management routes
+│   │   └── comments.js        # Comment management routes
+│   ├── middleware/
+│   │   ├── auth.js            # JWT verification
+│   │   └── permissions.js     # Role-based access control
+│   ├── .env                   # Environment variables
+│   ├── .gitignore
+│   ├── package.json
+│   └── server.js              # Entry point
+├── frontend/                   # React Frontend
+│   ├── src/
+│   │   ├── components/        # Reusable components
+│   │   ├── pages/             # Page components
+│   │   │   ├── Login.jsx
+│   │   │   └── Register.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── services/
+│   │   │   └── api.js         # API calls
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── .env                   # Frontend env variables
+│   ├── .gitignore
+│   ├── package.json
+│   ├── vite.config.js
+│   └── tailwind.config.js
+├── README.md                   # Main documentation
+└── API.md                      # API documentation
 ```
 
 ## 🏁 Getting Started
@@ -98,12 +126,12 @@ taskflow-pro/
 - MongoDB Atlas account (free tier works!)
 - npm or yarn
 
-### Installation
+### Backend Setup
 
 1. **Clone the repository**
 ```bash
 git clone https://github.com/YOUR_USERNAME/taskflow-pro.git
-cd taskflow-pro
+cd taskflow-pro/backend
 ```
 
 2. **Install dependencies**
@@ -111,7 +139,7 @@ cd taskflow-pro
 npm install
 ```
 
-3. **Create `.env` file**
+3. **Create `.env` file in backend folder**
 ```bash
 # Server
 PORT=5000
@@ -125,15 +153,49 @@ JWT_SECRET=your_super_secret_jwt_key_here
 JWT_EXPIRE=7d
 
 # Frontend (for CORS)
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173
 ```
 
-4. **Run development server**
+4. **Run backend server**
 ```bash
 npm run dev
 ```
 
-Server will start at `http://localhost:5000`
+Backend runs on: `http://localhost:5000`
+
+---
+
+### Frontend Setup
+
+1. **Open new terminal and navigate to frontend**
+```bash
+cd ../frontend
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Create `.env` file in frontend folder**
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+4. **Run frontend server**
+```bash
+npm run dev
+```
+
+Frontend runs on: `http://localhost:5173`
+
+---
+
+### Access the Application
+
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:5000
+- **API Health Check:** http://localhost:5000/health
 
 ## 🧪 API Endpoints
 
@@ -317,10 +379,12 @@ Multi-Tenancy:     ████████████████████ 
 Task Management:   ████████████████████ 100% ✅
 Permissions:       ████████████████████ 100% ✅
 Deployment:        ████████████████████ 100% ✅
+Frontend (Auth):   ████████████████████ 100% ✅
+Frontend (Tasks):  ░░░░░░░░░░░░░░░░░░░░   0%
 Real-time:         ░░░░░░░░░░░░░░░░░░░░   0%
 Advanced Features: ░░░░░░░░░░░░░░░░░░░░   0%
 
-Overall Progress:  █████████████░░░░░░░ 65%
+Overall Progress:  ██████████████░░░░░░ 70%
 ```
 
 ## 🎉 Key Achievements
@@ -333,7 +397,9 @@ Overall Progress:  █████████████░░░░░░░ 
 - ⚡ Production-grade error handling
 - 📝 Comprehensive API documentation
 - 💬 Team discussion features via comments
-
+- 🎨 Modern React frontend with Tailwind CSS
+- 🔒 JWT authentication flow (frontend + backend)
+- 🔄 Axios interceptors for automatic token management
 ---
 
 **⭐ Star this repo if you find it helpful!**
@@ -341,3 +407,54 @@ Overall Progress:  █████████████░░░░░░░ 
 **🔗 Live Demo:** https://taskflow-pro-production-f430.up.railway.app/
 
 **📧 Contact:** [www.linkedin.com/in/adeem-dabour]
+
+## 🖥️ Frontend
+
+**Built with:**
+- React 18 with Vite (lightning-fast dev server)
+- Tailwind CSS for utility-first styling
+- React Router v6 for client-side routing
+- Axios for HTTP requests with interceptors
+- Context API for global state management
+- Lucide React for beautiful icons
+- React Hot Toast for notifications
+
+**Features:**
+- 🔐 Beautiful login & register pages
+- 🎨 Gradient backgrounds with modern UI
+- 🔒 Protected routes with auth guards
+- 📱 Fully responsive design
+- ⚡ Fast page transitions
+- 🎯 Form validation
+- 💾 Automatic token management
+- 🔄 Auto-redirect on auth state changes
+
+**Pages:**
+- ✅ Login with JWT authentication
+- ✅ Register with workspace creation
+- ✅ Dashboard (basic)
+- 🚧 Task Management (in development)
+- 🚧 Team Management (planned)
+
+**To run frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend runs on: http://localhost:5173
+
+## 🔌 Frontend-Backend Connection
+
+The frontend connects to the backend API using:
+- Base URL: `http://localhost:5000/api` (development)
+- JWT tokens stored in localStorage
+- Automatic token injection via axios interceptors
+- Protected routes with authentication guards
+
+**Environment Variables:**
+Create `frontend/.env`:
+```
+VITE_API_URL=http://localhost:5000/api
+```
