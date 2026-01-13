@@ -84,7 +84,7 @@ router.get('/:id', async (req, res) => {
 // ===== CREATE TASK (Everyone can create) =====
 router.post('/', async (req, res) => {
   try {
-    const { title, description, priority, dueDate, assignedTo, tags } = req.body;
+    const { title, description, status,priority, dueDate, assignedTo, tags } = req.body;
     
     if (assignedTo) {
       const assignedUser = await User.findOne({
@@ -103,6 +103,7 @@ router.post('/', async (req, res) => {
     const task = new Task({
       title,
       description,
+      status: status || 'todo',
       priority,
       dueDate,
       assignedTo,

@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { tasksAPI, workspaceAPI } from '../services/api';
-import { 
-  LayoutDashboard, 
-  CheckCircle2, 
-  Circle, 
-  Clock, 
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import CreateTaskModal from "../components/tasks/CreateTaskModal";
+import { useNavigate } from "react-router-dom";
+import { tasksAPI, workspaceAPI } from "../services/api";
+import {
+  LayoutDashboard,
+  CheckCircle2,
+  Circle,
+  Clock,
   Users,
   Plus,
   LogOut,
   Loader,
-  AlertCircle
-} from 'lucide-react';
-import toast from 'react-hot-toast';
+  AlertCircle,
+} from "lucide-react";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [recentTasks, setRecentTasks] = useState([]);
   const [members, setMembers] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -35,23 +37,26 @@ const Dashboard = () => {
       const [statsRes, tasksRes, membersRes] = await Promise.all([
         tasksAPI.getStats(),
         tasksAPI.getAll({ limit: 5 }),
-        workspaceAPI.getMembers()
+        workspaceAPI.getMembers(),
       ]);
 
       setStats(statsRes.data.data);
       setRecentTasks(tasksRes.data.data.slice(0, 5));
       setMembers(membersRes.data.data);
     } catch (error) {
-      console.error('Dashboard error:', error);
-      toast.error('Failed to load dashboard data');
+      console.error("Dashboard error:", error);
+      toast.error("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
   };
+  const handleTaskCreated = () => {
+    fetchDashboardData(); // Refresh all data
+  };
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (loading) {
@@ -85,7 +90,9 @@ const Dashboard = () => {
 
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.name}
+                </p>
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
               <button
@@ -159,7 +166,7 @@ const Dashboard = () => {
                 Recent Tasks
               </h3>
               <button
-                onClick={() => toast.success('Tasks page coming soon!')}
+                onClick={() => toast.success("Tasks page coming soon!")}
                 className="text-blue-600 hover:text-blue-700 font-medium text-sm"
               >
                 View All →
@@ -176,7 +183,7 @@ const Dashboard = () => {
                   Get started by creating your first task!
                 </p>
                 <button
-                  onClick={() => toast.success('Create task coming soon!')}
+                  onClick={() => setShowCreateModal(true)}
                   className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
                   <Plus size={20} className="mr-2" />
@@ -207,9 +214,9 @@ const Dashboard = () => {
               ))}
             </div>
 
-            {user?.role === 'owner' && (
+            {user?.role === "owner" && (
               <button
-                onClick={() => toast.success('Add member coming soon!')}
+                onClick={() => toast.success("Add member coming soon!")}
                 className="w-full mt-4 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors"
               >
                 + Add Member
@@ -225,21 +232,26 @@ const Dashboard = () => {
             <QuickActionButton
               icon={<Plus size={20} />}
               label="Create Task"
-              onClick={() => toast.success('Create task coming soon!')}
+              onClick={() => setShowCreateModal(true)}
             />
             <QuickActionButton
               icon={<Users size={20} />}
               label="Manage Team"
-              onClick={() => toast.success('Team management coming soon!')}
+              onClick={() => toast.success("Team management coming soon!")}
             />
             <QuickActionButton
               icon={<LayoutDashboard size={20} />}
               label="View Analytics"
-              onClick={() => toast.success('Analytics coming soon!')}
+              onClick={() => toast.success("Analytics coming soon!")}
             />
           </div>
         </div>
       </main>
+      <CreateTaskModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onTaskCreated={handleTaskCreated}
+      />
     </div>
   );
 };
@@ -252,9 +264,7 @@ const StatCard = ({ title, value, icon, bgColor, textColor }) => (
         <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
         <p className={`text-3xl font-bold ${textColor}`}>{value}</p>
       </div>
-      <div className={`${bgColor} p-3 rounded-lg`}>
-        {icon}
-      </div>
+      <div className={`${bgColor} p-3 rounded-lg`}>{icon}</div>
     </div>
   </div>
 );
@@ -262,17 +272,17 @@ const StatCard = ({ title, value, icon, bgColor, textColor }) => (
 // Task Item Component
 const TaskItem = ({ task }) => {
   const priorityColors = {
-    urgent: 'bg-red-100 text-red-800',
-    high: 'bg-orange-100 text-orange-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    low: 'bg-green-100 text-green-800'
+    urgent: "bg-red-100 text-red-800",
+    high: "bg-orange-100 text-orange-800",
+    medium: "bg-yellow-100 text-yellow-800",
+    low: "bg-green-100 text-green-800",
   };
 
   const statusIcons = {
-    'todo': <Circle size={16} className="text-gray-500" />,
-    'in-progress': <Clock size={16} className="text-yellow-500" />,
-    'review': <AlertCircle size={16} className="text-blue-500" />,
-    'done': <CheckCircle2 size={16} className="text-green-500" />
+    todo: <Circle size={16} className="text-gray-500" />,
+    "in-progress": <Clock size={16} className="text-yellow-500" />,
+    review: <AlertCircle size={16} className="text-blue-500" />,
+    done: <CheckCircle2 size={16} className="text-green-500" />,
   };
 
   return (
@@ -286,7 +296,11 @@ const TaskItem = ({ task }) => {
           )}
         </div>
       </div>
-      <span className={`px-3 py-1 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}>
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-medium ${
+          priorityColors[task.priority]
+        }`}
+      >
         {task.priority}
       </span>
     </div>
@@ -296,16 +310,16 @@ const TaskItem = ({ task }) => {
 // Member Item Component
 const MemberItem = ({ member }) => {
   const roleColors = {
-    owner: 'bg-purple-100 text-purple-800',
-    admin: 'bg-blue-100 text-blue-800',
-    member: 'bg-gray-100 text-gray-800'
+    owner: "bg-purple-100 text-purple-800",
+    admin: "bg-blue-100 text-blue-800",
+    member: "bg-gray-100 text-gray-800",
   };
 
   const getInitials = (name) => {
     return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
@@ -319,7 +333,11 @@ const MemberItem = ({ member }) => {
         <p className="font-medium text-gray-900">{member.name}</p>
         <p className="text-xs text-gray-500">{member.email}</p>
       </div>
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleColors[member.role]}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          roleColors[member.role]
+        }`}
+      >
         {member.role}
       </span>
     </div>
