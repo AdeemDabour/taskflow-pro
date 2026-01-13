@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';  // ✅ Import the real Dashboard
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -17,34 +18,6 @@ const ProtectedRoute = ({ children }) => {
   }
 
   return isAuthenticated ? children : <Navigate to="/login" />;
-};
-
-// Temporary Dashboard (we'll build this next!)
-const Dashboard = () => {
-  const { user, logout } = useAuth();
-  
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-          <p className="text-gray-600 mb-4">Welcome, {user?.name}!</p>
-          <p className="text-sm text-gray-500 mb-4">
-            Workspace: {user?.workspace?.name}
-          </p>
-          <p className="text-sm text-gray-500 mb-4">
-            Role: {user?.role}
-          </p>
-          <button
-            onClick={logout}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 function App() {
@@ -63,7 +36,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </AuthProvider>
     </Router>
