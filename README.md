@@ -361,6 +361,22 @@ This is a portfolio project, but feedback and suggestions are welcome!
 
 MIT License - feel free to use this for learning!
 
+## 📸 Screenshots
+
+### Login Page
+![Login Page](screenshots/login.png)
+*Clean, modern authentication interface*
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+*Real-time statistics, recent tasks, and team overview*
+
+### Register Page
+![Register Page](screenshots/register.png)
+*Simple workspace creation flow*
+
+> **Note:** To add screenshots, create a `screenshots/` folder in the root and add images. Then update paths above.
+
 ## 🎯 Project Goals
 
 This project demonstrates:
