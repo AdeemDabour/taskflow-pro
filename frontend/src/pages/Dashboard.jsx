@@ -272,35 +272,32 @@ const StatCard = ({ title, value, icon, bgColor, textColor }) => (
 // Task Item Component
 const TaskItem = ({ task }) => {
   const priorityColors = {
-    urgent: "bg-red-100 text-red-800",
-    high: "bg-orange-100 text-orange-800",
-    medium: "bg-yellow-100 text-yellow-800",
-    low: "bg-green-100 text-green-800",
+    urgent: 'bg-red-100 text-red-800',
+    high: 'bg-orange-100 text-orange-800',
+    medium: 'bg-yellow-100 text-yellow-800',
+    low: 'bg-green-100 text-green-800'
   };
 
   const statusIcons = {
-    todo: <Circle size={16} className="text-gray-500" />,
-    "in-progress": <Clock size={16} className="text-yellow-500" />,
-    review: <AlertCircle size={16} className="text-blue-500" />,
-    done: <CheckCircle2 size={16} className="text-green-500" />,
+    'todo': <Circle size={16} className="text-gray-500" />,
+    'in-progress': <Clock size={16} className="text-yellow-500" />,
+    'review': <AlertCircle size={16} className="text-blue-500" />,
+    'done': <CheckCircle2 size={16} className="text-green-500" />
   };
 
   return (
     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
-      <div className="flex items-center space-x-3 flex-1">
+      <div className="flex items-center space-x-3 flex-1 min-w-0">
         {statusIcons[task.status]}
-        <div className="flex-1">
-          <h4 className="font-medium text-gray-900">{task.title}</h4>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-medium text-gray-900 truncate">{task.title}</h4>  
           {task.description && (
             <p className="text-sm text-gray-500 truncate">{task.description}</p>
           )}
         </div>
       </div>
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-medium ${
-          priorityColors[task.priority]
-        }`}
-      >
+      <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2 ${priorityColors[task.priority]}`}>
+        
         {task.priority}
       </span>
     </div>

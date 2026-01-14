@@ -44,6 +44,10 @@
 - [x] **Protected routes** - Auth guards and auto-redirects
 - [x] **Create Task modal** - Beautiful form with all task fields
 - [x] **Real-time dashboard updates** - Auto-refresh after task creation
+- [x] **Task List page** - View all tasks with advanced filtering
+- [x] **Search & Filters** - Search by text, filter by status and priority
+- [x] **Delete tasks** - With confirmation dialog and permission checks
+- [x] **Real-time filtering** - Instant results as you type
 
 ### 🚧 Future Enhancements
 - [ ] Real-time updates (Socket.io)
@@ -377,7 +381,14 @@ MIT License - feel free to use this for learning!
 ![Register Page](screenshots/register.png)
 *Simple workspace creation flow*
 
-> **Note:** To add screenshots, create a `screenshots/` folder in the root and add images. Then update paths above.
+### Task List
+![Task List](screenshots/task-list.png)
+*Comprehensive task management with search and filters*
+
+### Create Task Modal
+![Create Task Modal](screenshots/create-task.png)
+*Beautiful form for creating new tasks*
+
 
 ## 🎯 Project Goals
 
@@ -395,19 +406,19 @@ This project demonstrates:
 
 ## 📊 Project Status
 ```
-Foundation:        ████████████████████ 100% ✅
-Authentication:    ████████████████████ 100% ✅
-Multi-Tenancy:     ████████████████████ 100% ✅
-Task Management:   ████████████████████ 100% ✅
-Permissions:       ████████████████████ 100% ✅
-Deployment:        ████████████████████ 100% ✅
-Frontend (Auth):   ████████████████████ 100% ✅
-Frontend (Dashboard): ███████████████ 90% ✅
-Frontend (Tasks):  ████░░░░░░░░░░░░░░░░  20%
-Real-time:         ░░░░░░░░░░░░░░░░░░░░   0%
-Advanced Features: ░░░░░░░░░░░░░░░░░░░░   0%
+Foundation:           ████████████████████ 100% ✅
+Authentication:       ████████████████████ 100% ✅
+Multi-Tenancy:        ████████████████████ 100% ✅
+Task Management:      ████████████████████ 100% ✅
+Permissions:          ████████████████████ 100% ✅
+Deployment:           ████████████████████ 100% ✅
+Frontend (Auth):      ████████████████████ 100% ✅
+Frontend (Dashboard): ██████████████████ 100% ✅
+Frontend (Tasks):     ████████████░░░░░░░░  60%
+Real-time:            ░░░░░░░░░░░░░░░░░░░░   0%
+Advanced Features:    ░░░░░░░░░░░░░░░░░░░░   0%
 
-Overall Progress:  ████████████████░░░░ 78%
+Overall Progress:     ████████████████░░░░ 82%
 ```
 
 ## 🎉 Key Achievements
@@ -431,6 +442,11 @@ Overall Progress:  ████████████████░░░░ 
 - 🔄 Real-time dashboard updates after operations
 - 🎯 Form validation and error handling
 - 📋 Tag support for task organization
+- 📝 Task List page with advanced filtering
+- 🔍 Real-time search functionality
+- 🎯 Multi-criteria filtering (status + priority + search)
+- 🗑️ Delete with permission checks and confirmation
+- 📊 Dynamic task counts and statistics
 ---
 
 **⭐ Star this repo if you find it helpful!**
@@ -458,6 +474,12 @@ Overall Progress:  ████████████████░░░░ 
 - ✅ Team members widget
 - ✅ Quick actions section
 - ✅ Create Task modal with full form
+- ✅ Task List page with all tasks
+- ✅ Advanced search and filtering
+- ✅ Filter by status (Todo, In Progress, Review, Done)
+- ✅ Filter by priority (Low, Medium, High, Urgent)
+- ✅ Delete tasks with confirmation
+- ✅ Permission-based task operations
 - ✅ Task creation with tags, priority, status
 - ✅ Auto-refresh after task operations
 - ✅ Protected routes with auth guards
@@ -465,13 +487,15 @@ Overall Progress:  ████████████████░░░░ 
 - ✅ Modern gradient UI
 - ✅ Loading states & error handling
 - ✅ Toast notifications
-- 🚧 Task List page (in development)
-- 🚧 Edit/Delete tasks (coming soon)
+- 🚧 Edit tasks (coming soon)
+- 🚧 Task details with comments (coming soon)
+
 
 **Pages:**
 - ✅ Login with JWT authentication
 - ✅ Register with workspace creation
 - ✅ Dashboard with statistics & team view
+- ✅ Task List with search and filters
 - 🚧 Task Management (in development)
 - 🚧 Team Management (planned)
 
@@ -490,6 +514,41 @@ Frontend runs on: http://localhost:5173
 - Statistics update based on actual task data
 - All components integrated with backend API
 
+## 📋 Task Management Features
+
+### Create Tasks
+- **Modal-based creation** with beautiful UI
+- **Full form** including title, description, status, priority, due date, tags
+- **Real-time validation** with helpful error messages
+- **Instant feedback** with toast notifications
+- **Auto-refresh** dashboard and task list after creation
+
+### View Tasks
+- **Dashboard preview** - Recent 5 tasks with quick overview
+- **Full task list** - All tasks with complete details
+- **Task cards** showing status, priority, tags, due date, creator
+- **Visual indicators** with colored status icons and priority badges
+
+### Search & Filter
+- **Text search** - Search across task titles and descriptions
+- **Status filter** - Show only Todo, In Progress, Review, or Done tasks
+- **Priority filter** - Filter by Low, Medium, High, or Urgent
+- **Combined filters** - Use multiple filters simultaneously
+- **Filter summary** - Shows count of filtered vs total tasks
+- **Clear filters** - One-click reset to show all tasks
+
+### Delete Tasks
+- **Confirmation dialog** - Prevents accidental deletion
+- **Permission checks** - Only task creator, assignee, owner, or admin can delete
+- **Workspace isolation** - Can only delete tasks from your workspace
+- **Instant removal** - Task disappears immediately with success notification
+- **Database cleanup** - Permanently removes from MongoDB
+
+### Permissions
+- **Members** - Can create tasks, edit/delete own tasks
+- **Admins** - Can edit/delete any task in workspace
+- **Owners** - Full control over all tasks
+- **Automatic enforcement** - Backend validates all operations
 ## 🔌 Frontend-Backend Connection
 
 The frontend connects to the backend API using:
