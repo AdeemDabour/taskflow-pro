@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import CreateTaskModal from "../components/tasks/CreateTaskModal";
+import EditTaskModal from "../components/tasks/EditTaskModal";
 
 const TaskList = () => {
   const { user } = useAuth();
@@ -26,6 +27,8 @@ const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,7 +73,7 @@ const TaskList = () => {
     setFilteredTasks(filtered);
   }, [tasks, searchQuery, statusFilter, priorityFilter]);
 
-    useEffect(() => {
+  useEffect(() => {
     fetchTasks();
   }, []);
 
@@ -79,6 +82,14 @@ const TaskList = () => {
   }, [applyFilters]);
 
   const handleTaskCreated = () => {
+    fetchTasks();
+  };
+  const handleEditClick = (task) => {
+    setSelectedTask(task);
+    setShowEditModal(true);
+  };
+
+  const handleTaskUpdated = () => {
     fetchTasks();
   };
 
@@ -231,7 +242,12 @@ const TaskList = () => {
         ) : (
           <div className="grid gap-4">
             {filteredTasks.map((task) => (
-              <TaskCard key={task._id} task={task} onTaskUpdated={fetchTasks} />
+              <TaskCard
+                key={task._id}
+                task={task}
+                onTaskUpdated={fetchTasks}
+                onEdit={handleEditClick}
+              />
             ))}
           </div>
         )}
@@ -243,12 +259,19 @@ const TaskList = () => {
         onClose={() => setShowCreateModal(false)}
         onTaskCreated={handleTaskCreated}
       />
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        task={selectedTask}
+        onTaskUpdated={handleTaskUpdated}
+      />
     </div>
   );
 };
 
 // Task Card Component
-const TaskCard = ({ task, onTaskUpdated }) => {
+const TaskCard = ({ task, onTaskUpdated, onEdit }) => {
   const priorityColors = {
     urgent: "bg-red-100 text-red-800 border-red-200",
     high: "bg-orange-100 text-orange-800 border-orange-200",
@@ -311,8 +334,12 @@ const TaskCard = ({ task, onTaskUpdated }) => {
               </h3>
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => toast.success("Edit coming soon!")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(task);
+                  }}
                   className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Edit task"
                 >
                   <Edit size={18} />
                 </button>
