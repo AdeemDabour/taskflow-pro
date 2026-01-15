@@ -12,7 +12,12 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',  // ✅ Added CORS config
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://taskflow-pro.vercel.app', // Your Vercel URL (we'll update this)
+    /\.vercel\.app$/ // Allow all Vercel preview deployments
+  ],
   credentials: true
 }));
 
