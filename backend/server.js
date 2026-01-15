@@ -15,7 +15,7 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://taskflow-pro.vercel.app', // Your Vercel URL (we'll update this)
+    'https://taskflow-pros.vercel.app/', // Your Vercel URL
     /\.vercel\.app$/ // Allow all Vercel preview deployments
   ],
   credentials: true
