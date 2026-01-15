@@ -4,7 +4,14 @@
 
 ## 🌐 Live Demo
 
-**🚀 API:** https://taskflow-pro-production-f430.up.railway.app/
+**🎨 Frontend:** https://taskflow-pros.vercel.app/
+**🚀 Backend API:** https://taskflow-pro-production-f430.up.railway.app/
+
+**Try it now!** Full working application deployed and ready to use!
+
+**Test Credentials:** (Optional - or let users register)
+- Email: test@Live.com
+- Password: test123
 
 **Test the API:**
 - Health Check: `GET /health`
